@@ -1,18 +1,4 @@
-# Marco-antognini-sonarsource Tap
+# My Own Tap
 
-## How do I install these formulae?
-
-`brew install marco-antognini-sonarsource/tap/<formula>`
-
-Or `brew tap marco-antognini-sonarsource/tap` and then `brew install <formula>`.
-
-Or, in a `brew bundle` `Brewfile`:
-
-```ruby
-tap "marco-antognini-sonarsource/tap"
-brew "<formula>"
-```
-
-## Documentation
-
-`brew help`, `man brew` or check [Homebrew's documentation](https://docs.brew.sh).
+This tap currently has one cask: `claude-code@stable`.
+It differs from `claude-code` simply by using the stable release channel.
