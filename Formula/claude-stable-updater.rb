@@ -32,7 +32,6 @@ class ClaudeStableUpdater < Formula
 
       if [[ "${CURRENT_VERSION}" == "${STABLE_VERSION}" ]]; then
           echo "✅ Already up to date!"
-          terminal-notifier -title "Claude Stable Updater" -message "Already at v${CURRENT_VERSION}" -open "${LOG_URL}" >/dev/null 2>&1 || true
           exit 0
       fi
 
