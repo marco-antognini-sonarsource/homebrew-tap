@@ -6,6 +6,7 @@ class ClaudeStableUpdater < Formula
   sha256 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
   depends_on "jq"
+  depends_on "terminal-notifier"
 
   def install
     # Create the script with embedded content
@@ -17,6 +18,7 @@ class ClaudeStableUpdater < Formula
       readonly TAP_DIR="/opt/homebrew/Library/Taps/marco-antognini-sonarsource/homebrew-tap"
       readonly CASK_FILE="${TAP_DIR}/Casks/claude-code@stable.rb"
       readonly GCS_BUCKET="https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases"
+      readonly LOG_URL="file:///opt/homebrew/var/log/claude-stable-updater.log"
 
       # Get current version from cask file
       CURRENT_VERSION=$(grep --extended-regexp '^\\s+version' "${CASK_FILE}" | sed 's/.*"\\(.*\\)".*/\\1/')
@@ -30,6 +32,7 @@ class ClaudeStableUpdater < Formula
 
       if [[ "${CURRENT_VERSION}" == "${STABLE_VERSION}" ]]; then
           echo "✅ Already up to date!"
+          terminal-notifier -title "Claude Stable Updater" -message "Already at v${CURRENT_VERSION}" -open "${LOG_URL}" >/dev/null 2>&1 || true
           exit 0
       fi
 
@@ -80,6 +83,7 @@ class ClaudeStableUpdater < Formula
       git push
 
       echo "✅ Changes committed and pushed"
+      terminal-notifier -title "Claude Stable Updater" -message "Updated to v${STABLE_VERSION}" -open "${LOG_URL}" >/dev/null 2>&1 || true
       echo ""
       echo "To install/upgrade, run:"
       echo "  brew update; and brew outdated --greedy-auto-updates"
@@ -89,7 +93,7 @@ class ClaudeStableUpdater < Formula
   service do
     run opt_bin/"update-claude-stable"
     run_type :interval
-    interval 86400  # 24 hours in seconds
+    interval 3600   # 1 hour in seconds
     working_dir HOMEBREW_PREFIX/"Library/Taps/marco-antognini-sonarsource/homebrew-tap"
     environment_variables PATH: std_service_path_env
     log_path var/"log/claude-stable-updater.log"
