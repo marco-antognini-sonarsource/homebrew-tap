@@ -15,6 +15,9 @@ class ClaudeStableUpdater < Formula
 
       set -euo pipefail
 
+      echo ""
+      echo "=== [$(date '+%Y-%m-%d %H:%M:%S')] Check started ==="
+
       readonly TAP_DIR="/opt/homebrew/Library/Taps/marco-antognini-sonarsource/homebrew-tap"
       readonly CASK_FILE="${TAP_DIR}/Casks/claude-code@stable.rb"
       readonly GCS_BUCKET="https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases"
