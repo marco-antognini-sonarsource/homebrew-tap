@@ -9,6 +9,13 @@ class ClaudeStableUpdater < Formula
   depends_on "terminal-notifier"
 
   def install
+    # Install newsyslog config for log rotation
+    (etc/"newsyslog.d").mkpath
+    (etc/"newsyslog.d/claude-stable-updater.conf").write <<~EOS
+      # logfile                                    mode  count  size  when  flags
+      #{var}/log/claude-stable-updater.log  640   30     *     $D0   NJ
+    EOS
+
     # Create the script with embedded content
     (bin/"update-claude-stable").write <<~EOS
       #!/bin/bash
@@ -89,6 +96,19 @@ class ClaudeStableUpdater < Formula
       echo ""
       echo "To install/upgrade, run:"
       echo "  brew update; and brew outdated --greedy-auto-updates"
+    EOS
+  end
+
+  def caveats
+    <<~EOS
+      To enable log rotation, link the newsyslog config to /etc/newsyslog.d/:
+        sudo ln -sf #{etc}/newsyslog.d/claude-stable-updater.conf /etc/newsyslog.d/
+
+      newsyslog runs every 30 minutes via launchd and will rotate the log daily
+      at midnight, keeping 30 days of bzip2-compressed backups.
+
+      To verify the config is active:
+        sudo newsyslog -nrv #{var}/log/claude-stable-updater.log
     EOS
   end
 
