@@ -9,11 +9,15 @@ class ClaudeStableUpdater < Formula
   depends_on "terminal-notifier"
 
   def install
-    # Install newsyslog config for log rotation
+    # Install newsyslog config for log rotation.
+    # owner:group must be set explicitly: newsyslog runs as root and defaults to
+    # root:admin when creating the replacement file after rotation, which would
+    # leave the log unwritable by the service running as the installing user.
+    log_owner = "#{Etc.getpwuid.name}:#{Etc.getgrgid.name}"
     (etc/"newsyslog.d").mkpath
     (etc/"newsyslog.d/claude-stable-updater.conf").write <<~EOS
-      # logfile                                    mode  count  size  when  flags
-      #{var}/log/claude-stable-updater.log  640   30     *     $D0   NJ
+      # logfile                                    [owner:group]    mode  count  size  when  flags
+      #{var}/log/claude-stable-updater.log  #{log_owner}  640   30     *     $D0   NJ
     EOS
 
     # Create the script with embedded content
